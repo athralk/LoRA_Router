@@ -1,0 +1,12 @@
+# CircuitFormer has no licence: keep the clone, its weights and the datasets out of this repo
+third_party/
+ckpts/
+*.ckpt
+*.pth
+
+# Fully fine-tuned checkpoints are derived from CircuitFormer's weights and ~90 MB each
+results/adapters/full*.pt
+
+__pycache__/
+*.pyc
+.claude/
