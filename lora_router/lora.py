@@ -24,7 +24,7 @@ class QVLoRA(nn.Module):
         self.scale = alpha / rank
 
     def forward(self, weight):
-        delta = torch.bmm(self.lora_B, self.lora_A) * self.scale  # [2, d, d]
+        delta = (torch.bmm(self.lora_B, self.lora_A) * self.scale).to(weight.dtype)  # [2, d, d]
         return weight + torch.cat([delta[0], torch.zeros_like(delta[0]), delta[1]], dim=0)
 
 
@@ -39,17 +39,19 @@ class LinearLoRA(nn.Module):
         self.scale = alpha / rank
 
     def forward(self, weight):
-        return weight + self.lora_B @ self.lora_A * self.scale
+        return weight + (self.lora_B @ self.lora_A * self.scale).to(weight.dtype)
 
 
 def apply_lora(model: nn.Module, rank: int = 8, alpha: float = 16.0,
-               linear_targets: tuple = (), train_also: tuple = ()):
+               linear_targets: tuple = (), train_also: tuple = (), adapter_dtype=None):
     """Freeze `model` and attach LoRA.
 
     Every nn.MultiheadAttention gets q/v LoRA. `linear_targets` are name
-    suffixes of extra nn.Linear layers to adapt (e.g. "mhsa.out_proj", "score").
+    suffixes of extra nn.Linear layers to adapt (e.g. "mhsa.out_proj", "score",
+    or "q_proj", "v_proj" for a Hugging Face LLM).
     `train_also` are name substrings of parameters left fully trainable
     (e.g. "decoder.segmentation_head").
+    `adapter_dtype` keeps adapters in e.g. float32 on a bf16 model (default: weight dtype).
     Returns (trainable_params, total_params).
     """
     for p in model.parameters():
@@ -60,12 +62,12 @@ def apply_lora(model: nn.Module, rank: int = 8, alpha: float = 16.0,
             r = min(rank, m.embed_dim)
             w = m.in_proj_weight
             parametrize.register_parametrization(
-                m, "in_proj_weight", QVLoRA(m.embed_dim, r, alpha).to(w.device, w.dtype))
+                m, "in_proj_weight", QVLoRA(m.embed_dim, r, alpha).to(w.device, adapter_dtype or w.dtype))
         elif isinstance(m, nn.Linear) and any(name.endswith(t) for t in linear_targets):
             r = min(rank, m.in_features, m.out_features)
             parametrize.register_parametrization(
                 m, "weight", LinearLoRA(m.out_features, m.in_features, r, alpha)
-                .to(m.weight.device, m.weight.dtype))
+                .to(m.weight.device, adapter_dtype or m.weight.dtype))
 
     for name, p in model.named_parameters():
         if "lora_" in name or any(t in name for t in train_also):

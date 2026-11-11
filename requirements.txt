@@ -13,3 +13,7 @@ scipy==1.15.3
 pandas==2.3.3
 pathlib2
 tqdm
+# OpenROAD tuning by RL (flows/)
+transformers==5.11.0
+huggingface_hub==1.18.0
+safetensors==0.7.0
