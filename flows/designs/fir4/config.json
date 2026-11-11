@@ -1,0 +1,7 @@
+{
+    "DESIGN_NAME": "fir4",
+    "VERILOG_FILES": "dir::src/fir4.v",
+    "CLOCK_PORT": "clk",
+    "CLOCK_PERIOD": 8.0,
+    "FP_CORE_UTIL": 50
+}

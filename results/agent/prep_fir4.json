@@ -1,0 +1,31 @@
+{
+ "design": "fir4",
+ "cts_odb": "/home/atharvaa/lora_router_runs/fir4/runs/base/34-openroad-cts/fir4.odb",
+ "clock": 8.0,
+ "die": [
+  213.485,
+  224.205
+ ],
+ "markers": "2093 cells: 0 adder, 402 xor, 4 mux, 96 flop, 194 buf/inv, 1397 logic | high fanout: clknet_3_4__leaf_clk (19), clknet_3_5__leaf_clk (14), clknet_3_1__leaf_clk (14)",
+ "P_start": 14.364899999999999,
+ "area_start": 17278.0,
+ "target": 12.64,
+ "default": {
+  "P": 12.697600000000001,
+  "hold": 0.1194,
+  "area": 17955.0,
+  "tool_s": 15.4,
+  "actions": 2,
+  "success": false,
+  "power": 1.48
+ },
+ "max_effort": {
+  "P": 12.6314,
+  "hold": 0.1196,
+  "area": 18200.0,
+  "tool_s": 26.4,
+  "actions": 3,
+  "success": true,
+  "power": 1.5
+ }
+}

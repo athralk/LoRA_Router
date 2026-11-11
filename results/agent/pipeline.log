@@ -1,0 +1,18 @@
+mac12 {'P_start': 14.8285, 'target': 13.01, 'default': {'P': 13.187100000000001, 'hold': 0.1108, 'area': 13973.0, 'tool_s': 50.5, 'actions': 2, 'success': False, 'power': 2.51}, 'max_effort': {'P': 13.0091, 'hold': 0.1108, 'area': 14247.0, 'tool_s': 94.0, 'actions': 3, 'success': True, 'power': 2.57}}
+fir4 {'P_start': 14.364899999999999, 'target': 12.64, 'default': {'P': 12.697600000000001, 'hold': 0.1194, 'area': 17955.0, 'tool_s': 15.4, 'actions': 2, 'success': False, 'power': 1.48}, 'max_effort': {'P': 12.6314, 'hold': 0.1196, 'area': 18200.0, 'tool_s': 26.4, 'actions': 3, 'success': True, 'power': 1.5}}
+alu32 {'P_start': 12.9925, 'target': 11.36, 'default': {'P': 11.5484, 'hold': 0.1811, 'area': 13086.0, 'tool_s': 17.0, 'actions': 2, 'success': False, 'power': 1.72}, 'max_effort': {'P': 11.3567, 'hold': 0.1798, 'area': 13215.0, 'tool_s': 32.1, 'actions': 3, 'success': True, 'power': 1.73}}
+mac20 {'P_start': 17.4788, 'target': 14.87, 'default': {'P': 14.9724, 'hold': 0.1115, 'area': 31040.0, 'tool_s': 64.0, 'actions': 2, 'success': False, 'power': 6.87}, 'max_effort': {'P': 14.8627, 'hold': 0.1115, 'area': 31286.0, 'tool_s': 94.7, 'actions': 3, 'success': True, 'power': 6.99}}
+simd4 {'P_start': 14.6644, 'target': 13.24, 'default': {'P': 13.3528, 'hold': 0.2239, 'area': 19051.0, 'tool_s': 15.9, 'actions': 2, 'success': False, 'power': 2.79}, 'max_effort': {'P': 13.2369, 'hold': 0.2239, 'area': 19730.0, 'tool_s': 40.3, 'actions': 3, 'success': True, 'power': 2.85}}
+random     mac16  seed 0: success False P 17.08/14.43 actions 1 tool 0.3 s ['finish']
+random     mac16  seed 1: success False P 17.74/14.43 actions 4 tool 2.6 s ['repair_design', 'pull_path', 'resize', 'finish']
+random     mac12  seed 0: success False P 15.24/13.01 actions 1 tool 0.2 s ['finish']
+random     mac12  seed 1: success False P 16.13/13.01 actions 4 tool 4.2 s ['repair_design', 'pull_path', 'resize', 'finish']
+random     fir4   seed 0: success False P 14.77/12.64 actions 1 tool 0.2 s ['finish']
+random     fir4   seed 1: success False P 15.88/12.64 actions 4 tool 2.1 s ['repair_design', 'pull_path', 'resize', 'finish']
+random     alu32  seed 0: success False P 13.29/11.36 actions 1 tool 0.2 s ['finish']
+random     alu32  seed 1: success False P 13.96/11.36 actions 4 tool 4.1 s ['repair_design', 'pull_path', 'resize', 'finish']
+random     mac20  seed 0: success False P 18.04/14.87 actions 1 tool 0.3 s ['finish']
+random     mac20  seed 1: success False P 18.51/14.87 actions 4 tool 5.4 s ['repair_design', 'pull_path', 'resize', 'finish']
+random     simd4  seed 0: success False P 15.02/13.24 actions 1 tool 0.3 s ['finish']
+random     simd4  seed 1: success False P 15.89/13.24 actions 4 tool 5.0 s ['repair_design', 'pull_path', 'resize', 'finish']
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|##########| 338/338 [00:00<00:00, 4051.91it/s]

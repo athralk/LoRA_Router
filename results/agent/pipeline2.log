@@ -1,0 +1,110 @@
+=== stage eval_qwen Wed Nov 11 15:06:44 IST 2026
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|##########| 338/338 [00:00<00:00, 4946.82it/s]
+Qwen2.5-1.5B + LoRA r16 (attention + MLP): 18,464,768 trainable of 1,562,179,072 (1.18%)
+qwen       mac16  seed 0: success False P 17.35/14.43 actions 6 tool 0.1 s ['upsize_path', 'upsize_path', 'invalid', 'pull_path', 'invalid', 'upsize_path']
+qwen       mac16  seed 1: success False P 14.59/14.43 actions 6 tool 91.1 s ['invalid', 'repair_design', 'invalid', 'upsize_path', 'repair_design', 'repair_timing']
+qwen       mac12  seed 0: success None P 12.77/13.01 actions 6 tool 66.6 s ['upsize_path', 'upsize_path', 'upsize_path', 'repair_timing', 'repair_timing', 'invalid']
+qwen       mac12  seed 1: success None P 12.76/13.01 actions 6 tool 80.6 s ['invalid', 'repair_timing', 'upsize_path', 'repair_timing', 'invalid', 'invalid']
+qwen       fir4   seed 0: success None P 13.95/12.64 actions 6 tool 0.1 s ['upsize_path', 'upsize_path', 'upsize_path', 'resize', 'upsize_path', 'upsize_path']
+qwen       fir4   seed 1: success False P 12.76/12.64 actions 6 tool 39.9 s ['invalid', 'invalid', 'repair_timing', 'invalid', 'invalid', 'repair_timing']
+qwen       alu32  seed 0: success None P 12.47/11.36 actions 6 tool 0.0 s ['upsize_path', 'upsize_path', 'upsize_path', 'upsize_path', 'upsize_path', 'upsize_path']
+qwen       alu32  seed 1: success None P 13.21/11.36 actions 6 tool 18.6 s ['invalid', 'repair_timing', 'invalid', 'invalid', 'repair_design', 'invalid']
+qwen       mac20  seed 0: success False P 17.18/14.87 actions 6 tool 0.2 s ['upsize_path', 'upsize_path', 'upsize_path', 'resize', 'upsize_path', 'upsize_path']
+qwen       mac20  seed 1: success False P 14.99/14.87 actions 6 tool 167.8 s ['invalid', 'repair_timing', 'invalid', 'repair_timing', 'repair_timing', 'repair_timing']
+qwen       simd4  seed 0: success None P 14.42/13.24 actions 6 tool 0.1 s ['upsize_path', 'upsize_path', 'upsize_path', 'resize', 'upsize_path', 'invalid']
+qwen       simd4  seed 1: success False P 13.41/13.24 actions 6 tool 40.5 s ['invalid', 'repair_design', 'invalid', 'repair_timing', 'repair_timing', 'repair_timing']
+
+policy      success  mean actions  mean tool s  mean P/target
+qwen         0/12        6.0        42.1        1.068
+=== stage train Wed Nov 11 15:24:31 IST 2026
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|##########| 338/338 [00:00<00:00, 3405.83it/s]
+Qwen2.5-1.5B + LoRA r16 (attention + MLP): 18,464,768 trainable of 1,562,179,072 (1.18%)
+ep 0 mac16 step 0: rewards [-0.1, -0.1, -0.32, -0.1] best {'op': 'invalid', 'raw': '{"op": "fix_slew", "candicate_cell": "_4454_", "slack_margin'} P 16.69 (target 14.43) loss +0.534
+ep 0 mac16 step 1: rewards [0.86, -0.01, 0.86, 0.82] best {'op': 'repair_timing', 'margin': 0.0, 'buffer_pct': 100.0, 'cloning': False} P 14.08 (target 14.43) loss +0.151
+ep 0 mac16 step 2: rewards [-0.15, -0.17, -0.16, -0.15] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 50.0, 'cloning': True} P 14.06 (target 14.43) loss +0.384
+ep 0 mac16 step 3: rewards [-0.07, -0.07, -0.07, -0.07] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0, 'cloning': True} P 13.96 (target 14.43) loss +0.022
+ep 0 mac16 step 4: rewards [-0.07, -0.07, -0.1, -0.07] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 50.0, 'cloning': True} P 13.93 (target 14.43) loss -0.377
+ep 0 mac16 step 5: rewards [0.82, 0.82, 0.82, 0.82] best {'op': 'repair_timing', 'margin': 0.0, 'buffer_pct': 100.0, 'cloning': False} P 14.16 (target 14.43) loss -0.034
+ep 1 mac12 step 0: rewards [0.95, 0.95, 0.95, -0.1] best {'op': 'repair_timing', 'margin': 0.0, 'buffer_pct': 0.0, 'cloning': False} P 12.90 (target 13.01) loss -0.064
+ep 1 mac12 step 1: rewards [0.06, 0.05, 0.05, 0.05] best {'op': 'repair_timing', 'margin': 0.0, 'buffer_pct': 60.0, 'cloning': False} P 12.62 (target 13.01) loss -0.004
+ep 1 mac12 step 2: rewards [0.0, 0.0, 0.01, 0.01] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 50.0, 'cloning': True} P 12.53 (target 13.01) loss -0.128
+ep 1 mac12 step 3: rewards [-0.03, -0.03, -0.03, -0.03] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 50.0, 'cloning': True} P 12.52 (target 13.01) loss -0.094
+ep 1 mac12 step 4: rewards [-0.03, -0.03, -0.03, -0.03] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 75.0, 'cloning': True} P 12.52 (target 13.01) loss -0.022
+ep 1 mac12 step 5: rewards [0.81, 0.81, 0.81, 0.81] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 75.0, 'cloning': True} P 12.81 (target 13.01) loss -0.019
+ep 2 fir4 step 0: rewards [1.07, 1.08, 1.07, 1.08] best {'op': 'repair_timing', 'margin': '0.1', 'buffer_pct': '50', 'cloning': False} P 12.39 (target 12.64) loss -0.548
+ep 2 fir4 step 1: rewards [-0.05, -0.05, -0.05, -0.05] best {'op': 'repair_timing', 'margin': '0.1', 'buffer_pct': '75', 'cloning': False} P 12.37 (target 12.64) loss -0.025
+ep 2 fir4 step 2: rewards [-0.05, -0.05, -0.05, -0.04] best {'op': 'repair_timing', 'margin': '0.1', 'buffer_pct': '100', 'cloning': True} P 12.38 (target 12.64) loss +0.129
+ep 2 fir4 step 3: rewards [-0.04, -0.04, -0.04, -0.04] best {'op': 'repair_timing', 'margin': '0.1', 'buffer_pct': '100', 'cloning': True} P 12.38 (target 12.64) loss +0.100
+ep 2 fir4 step 4: rewards [-0.04, -0.04, -0.04, -0.04] best {'op': 'repair_timing', 'margin': '0.2', 'buffer_pct': '100', 'cloning': True} P 12.38 (target 12.64) loss +0.007
+ep 2 fir4 step 5: rewards [-0.22, -0.22, -0.22, -0.22] best {'op': 'repair_timing', 'margin': '0.2', 'buffer_pct': '100', 'cloning': False} P 12.70 (target 12.64) loss +0.260
+ep 3 alu32 step 0: rewards [0.97, 0.96, 0.96, 0.96] best {'op': 'repair_timing', 'margin': 0.0, 'buffer_pct': 0.0} P 11.31 (target 11.36) loss +0.427
+ep 3 alu32 step 1: rewards [0.04, 0.04, 0.04, 0.04] best {'op': 'repair_timing', 'margin': 0.0, 'buffer_pct': 100.0} P 11.19 (target 11.36) loss -0.035
+ep 3 alu32 step 2: rewards [0.0, 0.0, -0.1, 0.0] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0} P 11.14 (target 11.36) loss -1.142
+ep 3 alu32 step 3: rewards [-0.02, -0.02, -0.02, -0.02] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 0.0} P 11.13 (target 11.36) loss -0.647
+ep 3 alu32 step 4: rewards [-0.03, -0.04, -0.03, -0.03] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 0.0} P 11.13 (target 11.36) loss +0.027
+ep 3 alu32 step 5: rewards [0.83, 0.83, 0.83, 0.83] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0} P 11.35 (target 11.36) loss -0.096
+ep 4 mac16 step 0: rewards [0.83, 0.83, 0.82, 0.83] best {'op': 'repair_timing', 'margin': 0.1} P 14.14 (target 14.43) loss -0.054
+ep 4 mac16 step 1: rewards [-0.15, -0.14, -0.15, -0.15] best {'op': 'repair_timing', 'margin': 0.5, 'buffer_pct': 50.0} P 14.14 (target 14.43) loss -0.132
+ep 4 mac16 step 2: rewards [-0.12, -0.1, -0.1, -0.14] best {'op': 'invalid', 'raw': '```json\n{\n  "op": "fix_tvj_delay",\n  "slack_phases": [\n    {'} P 14.14 (target 14.43) loss +0.735
+ep 4 mac16 step 3: rewards [-0.15, -0.13, -0.1, -0.13] best {'op': 'invalid', 'raw': "Given the structure of the problem set, it's clear that ther"} P 14.14 (target 14.43) loss +1.003
+ep 4 mac16 step 4: rewards [-0.1, -0.13, -0.13, -0.13] best {'op': 'invalid', 'raw': 'Here is an example JSON object that specifies some optimizat'} P 14.14 (target 14.43) loss +0.752
+ep 4 mac16 step 5: rewards [0.77, 0.77, -0.1, -0.1] best {'op': 'repair_timing'} P 14.38 (target 14.43) loss -0.390
+ep 5 mac12 step 0: rewards [0.9, -0.1, 0.9, 0.9] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0} P 12.86 (target 13.01) loss -0.054
+ep 5 mac12 step 1: rewards [-0.05, -0.1, -0.05, -0.1] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 95.7} P 12.74 (target 13.01) loss +0.161
+ep 5 mac12 step 2: rewards [0.03, 0.02, 0.03, 0.03] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0} P 12.66 (target 13.01) loss -0.746
+ep 5 mac12 step 3: rewards [-0.02, -0.03, -0.1, -0.02] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0} P 12.64 (target 13.01) loss +0.403
+ep 5 mac12 step 4: rewards [-0.03, -0.1, -0.03, -0.03] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0, 'cloning': False} P 12.64 (target 13.01) loss -0.033
+ep 5 mac12 step 5: rewards [0.81, 0.81, 0.81, 0.81] best {'op': 'repair_timing', 'margin': 0.1, 'buffer_pct': 100.0, 'cloning': False} P 12.93 (target 13.01) loss -0.553
+ep 6 fir4 step 0: rewards [-0.1, 1.07, 1.07, 1.07] best {'op': 'repair_timing', 'margin': '0.01', 'buffer_pct': '100'} P 12.41 (target 12.64) loss +0.002
+ep 6 fir4 step 1: rewards [-0.06, -0.1, -0.06, -0.06] best {'op': 'repair_timing', 'margin': '0.05', 'buffer_pct': '150'} P 12.38 (target 12.64) loss +0.030
+ep 6 fir4 step 2: rewards [-0.1, 0.04, 0.05, 0.04] best {'op': 'repair_timing', 'margin': '0.1111', 'buffer_pct': '100', 'cloning': False} P 12.21 (target 12.64) loss -0.592
+ep 6 fir4 step 3: rewards [-0.03, -0.03, -0.03, -0.03] best {'op': 'repair_timing', 'margin': '0.2', 'buffer_pct': '50', 'cloning': True} P 12.21 (target 12.64) loss -0.245
+ep 6 fir4 step 4: rewards [-0.01, -0.01, -0.01, -0.01] best {'op': 'repair_timing'} P 12.18 (target 12.64) loss +0.385
+ep 6 fir4 step 5: rewards [0.81, 0.81, 0.81, 0.81] best {'op': 'repair_timing', 'margin': '0.1', 'buffer_pct': '50', 'cloning': False} P 12.46 (target 12.64) loss -0.279
+ep 7 alu32 step 0: rewards [0.96, -0.1, -0.1, 0.97] best {'op': 'repair_timing'} P 11.31 (target 11.36) loss -0.962
+ep 7 alu32 step 1: rewards [0.04, -0.1, -0.1, -0.1] best {'op': 'repair_timing'} P 11.19 (target 11.36) loss -0.365
+ep 7 alu32 step 2: rewards [-0.0, -0.0, -0.0, -0.1] best {'op': 'repair_timing'} P 11.14 (target 11.36) loss -0.290
+ep 7 alu32 step 3: rewards [-0.03, -0.1, -0.03, -0.1] best {'op': 'repair_timing'} P 11.13 (target 11.36) loss -0.844
+ep 7 alu32 step 4: rewards [-0.04, -0.04, -0.1, -0.04] best {'op': 'repair_timing'} P 11.13 (target 11.36) loss -0.982
+ep 7 alu32 step 5: rewards [0.83, -0.1, 0.83, 0.83] best {'op': 'repair_timing'} P 11.35 (target 11.36) loss -0.832
+ep 8 mac16 step 0: rewards [0.83, 0.82, 0.83, 0.81] best {'op': 'repair_timing'} P 14.14 (target 14.43) loss +0.139
+ep 8 mac16 step 1: rewards [-0.15, -0.15, -0.15, -0.15] best {'op': 'repair_timing'} P 14.15 (target 14.43) loss +0.016
+ep 8 mac16 step 2: rewards [-0.12, -0.12, -0.13, -0.12] best {'op': 'repair_timing'} P 14.15 (target 14.43) loss +0.183
+ep 8 mac16 step 3: rewards [-0.12, -0.12, -0.12, -0.12] best {'op': 'repair_timing'} P 14.15 (target 14.43) loss +0.530
+ep 8 mac16 step 4: rewards [-0.12, -0.12, -0.12, -0.12] best {'op': 'repair_timing'} P 14.15 (target 14.43) loss -0.281
+ep 8 mac16 step 5: rewards [0.76, 0.76, 0.76, 0.76] best {'op': 'repair_timing'} P 14.41 (target 14.43) loss -0.157
+ep 9 mac12 step 0: rewards [0.88, 0.88, 0.88, 0.88] best {'op': 'repair_timing'} P 12.86 (target 13.01) loss +0.183
+ep 9 mac12 step 1: rewards [-0.03, -0.03, -0.03, -0.03] best {'op': 'repair_timing'} P 12.72 (target 13.01) loss +0.241
+ep 9 mac12 step 2: rewards [0.01, 0.01, 0.01, 0.01] best {'op': 'repair_timing'} P 12.64 (target 13.01) loss -0.239
+ep 9 mac12 step 3: rewards [0.01, 0.01, 0.01, 0.01] best {'op': 'repair_timing'} P 12.58 (target 13.01) loss -0.646
+ep 9 mac12 step 4: rewards [-0.02, -0.02, -0.02, -0.02] best {'op': 'repair_timing'} P 12.58 (target 13.01) loss +0.074
+ep 9 mac12 step 5: rewards [0.81, 0.81, 0.81, 0.81] best {'op': 'repair_timing'} P 12.88 (target 13.01) loss -0.178
+ep 10 fir4 step 0: rewards [1.07, 1.07, 1.07, 1.07] best {'op': 'repair_timing'} P 12.41 (target 12.64) loss -0.221
+ep 10 fir4 step 1: rewards [-0.06, -0.06, -0.06, -0.1] best {'op': 'repair_timing'} P 12.38 (target 12.64) loss -0.011
+ep 10 fir4 step 2: rewards [0.04, 0.04, 0.04, 0.04] best {'op': 'repair_timing'} P 12.22 (target 12.64) loss -0.274
+ep 10 fir4 step 3: rewards [-0.02, -0.02, -0.02, -0.02] best {'op': 'repair_timing'} P 12.20 (target 12.64) loss +0.124
+ep 10 fir4 step 4: rewards [-0.02, -0.02, -0.02, -0.02] best {'op': 'repair_timing'} P 12.19 (target 12.64) loss -0.484
+ep 10 fir4 step 5: rewards [0.81, 0.8, 0.8, 0.8] best {'op': 'repair_timing'} P 12.47 (target 12.64) loss -0.468
+ep 11 alu32 step 0: rewards [-0.1, 0.97, 0.97, 0.97] best {'op': 'repair_timing'} P 11.31 (target 11.36) loss -0.260
+ep 11 alu32 step 1: rewards [0.03, 0.04, 0.04, 0.03] best {'op': 'repair_timing'} P 11.19 (target 11.36) loss -0.415
+ep 11 alu32 step 2: rewards [-0.01, -0.01, -0.01, -0.01] best {'op': 'repair_timing'} P 11.14 (target 11.36) loss +0.064
+Traceback (most recent call last):
+  File "C:\Users\atharvaa\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\atharvaa\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "D:\github_repos_all\LoRA_Router\flows\agent.py", line 208, in <module>
+    f"{stats.mean(r['actions'] for r in rs):9.1f} {stats.mean(r['tool_s'] for r in rs):11.1f} "
+  File "D:\github_repos_all\LoRA_Router\flows\agent.py", line 101, in train
+    def explore_action(ep, k, rng):
+  File "D:\github_repos_all\LoRA_Router\flows\closure_env.py", line 440, in run_branches
+    def load_prep(design):
+  File "D:\github_repos_all\LoRA_Router\flows\closure_env.py", line 440, in <listcomp>
+    def load_prep(design):
+  File "D:\github_repos_all\LoRA_Router\flows\closure_env.py", line 311, in branch
+    return self.P <= g["target"] and self.m["hold"] >= 0 and self.m["area"] <= 1.25 * g["area_start"]
+  File "D:\github_repos_all\LoRA_Router\flows\closure_env.py", line 306, in checkpoint
+    r += 1.0 if info["success"] else 0.0
+  File "D:\github_repos_all\LoRA_Router\flows\session.py", line 103, in cmd
+    self.p.stdin.write(base64.b64encode(tcl.encode()).decode() + "\n")
+OSError: [Errno 22] Invalid argument

@@ -1,0 +1,31 @@
+{
+ "design": "mac20",
+ "cts_odb": "/home/atharvaa/lora_router_runs/mac20/runs/base/34-openroad-cts/mac20.odb",
+ "clock": 8.0,
+ "die": [
+  269.14,
+  279.86
+ ],
+ "markers": "3615 cells: 0 adder, 402 xor, 4 mux, 104 flop, 390 buf/inv, 2715 logic | high fanout: clknet_3_1__leaf_clk (18), clknet_3_2__leaf_clk (15), clknet_3_0__leaf_clk (15)",
+ "P_start": 17.4788,
+ "area_start": 29308.0,
+ "target": 14.87,
+ "default": {
+  "P": 14.9724,
+  "hold": 0.1115,
+  "area": 31040.0,
+  "tool_s": 64.0,
+  "actions": 2,
+  "success": false,
+  "power": 6.87
+ },
+ "max_effort": {
+  "P": 14.8627,
+  "hold": 0.1115,
+  "area": 31286.0,
+  "tool_s": 94.7,
+  "actions": 3,
+  "success": true,
+  "power": 6.99
+ }
+}

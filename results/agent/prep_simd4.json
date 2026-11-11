@@ -1,0 +1,31 @@
+{
+ "design": "simd4",
+ "cts_odb": "/home/atharvaa/lora_router_runs/simd4/runs/base/34-openroad-cts/simd4.odb",
+ "clock": 8.0,
+ "die": [
+  212.2,
+  222.92
+ ],
+ "markers": "2309 cells: 0 adder, 224 xor, 32 mux, 122 flop, 330 buf/inv, 1601 logic | high fanout: clknet_0_clk (17), net267 (11), net264 (11)",
+ "P_start": 14.6644,
+ "area_start": 18169.0,
+ "target": 13.24,
+ "default": {
+  "P": 13.3528,
+  "hold": 0.2239,
+  "area": 19051.0,
+  "tool_s": 15.9,
+  "actions": 2,
+  "success": false,
+  "power": 2.79
+ },
+ "max_effort": {
+  "P": 13.2369,
+  "hold": 0.2239,
+  "area": 19730.0,
+  "tool_s": 40.3,
+  "actions": 3,
+  "success": true,
+  "power": 2.85
+ }
+}

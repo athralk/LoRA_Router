@@ -2,7 +2,7 @@
 
 Low-rank adaptation (LoRA) for chip physical design, in two parts:
 
-1. **[OpenROAD tuning by RL](#openroad-tuning-by-rl):** Qwen2.5-1.5B with a LoRA adapter proposes OpenROAD flow settings; OpenROAD routes each one and the result is the reward.
+1. **[OpenROAD tuning by RL](#openroad-tuning-by-rl):** Qwen2.5-1.5B with a LoRA adapter proposes OpenROAD flow settings, and later issues step-by-step timing-closure commands; OpenROAD runs each one and the result is the reward.
 2. **[Congestion-model adaptation](#congestion-model-adaptation):** a pretrained congestion predictor adapted to a new technology node.
 
 ## OpenROAD tuning by RL
@@ -17,16 +17,33 @@ Low-rank adaptation (LoRA) for chip physical design, in two parts:
 | Die area | 53,538 µm² | 53,538 µm² |
 | Wirelength / power | 63,419 µm / 4.94 mW | 69,206 µm / 5.26 mW |
 
-Not yet shown: that the LoRA learned this rather than found it by search (no random-search control yet), and a higher maximum frequency (the clock target was fixed).
+**Frequency objective:** a sampled setting reaches **73.1 MHz vs 65.7 MHz (+11.3%)** at the slow corner, at the same die area, with hold met. That was confirmed by re-timing both layouts at equal clock periods. It costs 13.5% more power at equal frequency.
+
+Not yet shown: that the LoRA learned either result rather than found it by search. Base Qwen and the trained LoRA scored the same, rewards showed no learning trend, and there is no random-search control yet.
+
+### Command-level timing-closure agent
+
+The goal is fewer iterations to timing closure. Qwen + LoRA (r16, attention + MLP) works inside a live OpenROAD session:
+
+- **Each step:** it reads a text summary of the 5 worst timing paths, cell by cell, and replies with one JSON command: resize a cell, repair timing, pull a path together, route + repair, or finish.
+- **Training:** RL with branch-and-compare on 4 designs (mac16, mac12, fir4, alu32). mac20 and simd4 are held out.
+
+**Result so far: negative.** In eval it met the timing target in 2 of 12 runs, against 5 of 6 designs for OpenROAD's max-effort script. 81% of its answers were invalid, and each decision took about 9 s. Causes and next steps (candidate scoring, search-labelled fine-tuning, an honest post-route "met" signal): [docs/2026-11-11_agent_results.md](docs/2026-11-11_agent_results.md). Plan: [docs/plan.md](docs/plan.md).
 
 | Path | Purpose |
 |---|---|
 | `flows/run_flow.py` | Runs OpenLane 2 / OpenROAD in WSL with given knobs; returns routing time, timing, DRC, area, power |
-| `flows/rl.py` | REINFORCE on the LoRA weights of Qwen2.5-1.5B; `--random` runs the random-search control |
+| `flows/rl.py` | REINFORCE on the LoRA weights of Qwen2.5-1.5B; `--objective route\|freq`; `--random` runs the random-search control |
 | `flows/compare.py` | Base Qwen vs Qwen + trained LoRA, each answer routed by OpenROAD |
-| `flows/designs/mac16/` | Test design: 16×16 multiply-accumulate |
-| `docs/` | Dated write-ups |
-| `results/flow_runs.jsonl`, `results/rl/` | Every flow run, RL log, trained adapter (4.2 MB) |
+| `flows/sta_at.py` | Re-times a finished layout at other clock periods (setup at ss, hold at ff, power at tt) |
+| `flows/session.py` | Live OpenROAD session (loads a design the way OpenLane does; Tcl round trip under 1 ms) |
+| `flows/closure_env.py` | Agent environment: worst-path observation, action menu → Tcl, reward, checkpoints, parallel branches |
+| `flows/agent.py` | Qwen + LoRA agent: `prep`, `train` (`--explore`, `--resume`, `--start`), `eval` (logs tool, decision and wall time) |
+| `flows/pipeline.sh` | Prep → baselines → training → eval for all 6 designs |
+| `flows/designs/` | mac16, mac12, mac20 (multiply-accumulate), fir4 (4-tap FIR), alu32, simd4 (4-lane 8-bit SIMD) |
+| `docs/` | Dated write-ups and the plan |
+| `results/flow_runs.jsonl`, `results/rl/` | Every flow run, RL logs, settings adapters (4.2 MB each) |
+| `results/agent/` | Agent logs (`agent_runs.jsonl`: every branch and episode), prep files, agent adapters (74 MB each) |
 
 **Setup (in addition to the Python requirements):**
 
@@ -43,6 +60,9 @@ Run directories are written to `~/lora_router_runs/` inside WSL and deleted afte
 python -m flows.run_flow mac16                                   # default flow
 python -W ignore -m flows.rl --design mac16 --steps 5 --group 4   # RL training (~1.5 h)
 python -W ignore -m flows.compare --design mac16 --n 6             # base vs LoRA (~1 h)
+python -W ignore -m flows.agent prep mac16                         # agent: baselines and target
+python -W ignore -m flows.agent train --designs mac16 mac12 fir4 alu32 --episodes 24 --explore
+python -W ignore -m flows.agent eval --designs mac20 simd4 --policies default max_effort lora
 ```
 
 ## Congestion-model adaptation
@@ -129,4 +149,4 @@ Training uses half precision and batch size 1 by default so it fits an 8 GB GPU.
 
 ## Third-party
 
-CircuitFormer and the CircuitNet datasets belong to their authors and are not redistributed here. Fully fine-tuned checkpoints are git-ignored because they are derived from CircuitFormer's weights. Qwen2.5-1.5B-Instruct (Apache 2.0) is downloaded, not redistributed; `results/rl/adapter_mac16.pt` holds only the LoRA weights. OpenLane 2, OpenROAD and the sky130 PDK are used through their published Docker image and installer.
+CircuitFormer and the CircuitNet datasets belong to their authors and are not redistributed here. Fully fine-tuned checkpoints are git-ignored because they are derived from CircuitFormer's weights. Qwen2.5-1.5B-Instruct (Apache 2.0) is downloaded, not redistributed; `results/rl/*.pt` and `results/agent/*.pt` hold only LoRA weights. OpenLane 2, OpenROAD and the sky130 PDK are used through their published Docker image and installer.

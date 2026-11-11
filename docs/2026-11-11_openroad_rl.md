@@ -66,9 +66,43 @@
 - **Not shown:** a higher maximum frequency. The clock target was fixed at 8 ns and slack was only a guard. Achievable frequency is about the same (65.7 → 65.6 MHz slow corner, 128.7 → 126.7 MHz typical, period ≈ target − WNS).
 - **Scope:** one small design, one PDK, one seed. OpenROAD's algorithms are unchanged; only its settings are chosen.
 
+## Base Qwen vs Qwen + LoRA
+
+- 6 sampled answers each, all routed by OpenROAD (`python -m flows.compare --n 6`).
+- **Base:** 1/6 valid, mean reward −0.613. **LoRA:** 1/6 valid, mean reward −0.619. **No measurable difference.**
+- Weak hint only: both LoRA runs that completed routed in 69–78 s; two of base Qwen's three took 150–160 s.
+- **Conclusion:** 5 RL steps (20 runs) did not change the policy measurably. The 1.69× setting came from the search, not from a learned skill.
+
+## Runtime noise
+
+- A fresh default run took 145.8 s routing against 128.2 s earlier, with an identical layout (same wirelength and slack).
+- Routing time varies by about ±15% between identical runs. The speed-up is 1.69× against the 128.2 s default and 1.92× against 145.8 s. Future comparisons interleave default and tuned repeats.
+
+## Frequency objective (`--objective freq`)
+
+- **Reward:** $R = \ln(P^{d}/P) - \lambda\max(0, \ln(A/A^{d}))$, with achievable period $P$ = clock target − WNS at the slow corner (ss, 100 °C, 1.60 V). −1 if the flow fails or DRC > 0; −0.5 if hold fails or routing takes more than 1.25× default. Fresh rank-8 adapter.
+- **Extra actions (8):** `CLOCK_PERIOD`, `SYNTH_STRATEGY`, `SYNTH_ABC_BUFFERING`, `SYNTH_SIZING`, `PL_RESIZER_SETUP_SLACK_MARGIN`, `GRT_RESIZER_SETUP_SLACK_MARGIN`, `RUN_POST_GRT_RESIZER_TIMING`, `PL_RESIZER_SETUP_MAX_BUFFER_PCT`.
+- **Training:** 6 steps × 4 runs. Mean reward by step −0.19, −0.52, −0.64, −0.50, −0.27, −0.30: **no learning trend**. The best answer came from untouched Qwen (step 0).
+- **Best result at the same die area**, confirmed by re-timing the same layouts with `flows/sta_at.py`. At 6.57 ns the tool reproduces OpenLane's slack exactly, −7.1015 ns.
+
+| | Default flow | Best frequency run |
+|---|---|---|
+| Shortest period meeting setup at ss | 15.22 ns | **13.68 ns** |
+| Max frequency | 65.7 MHz | **73.1 MHz (+11.3%)** |
+| Slack at 13.68 ns | −1.53 ns | +0.009 ns |
+| Hold slack (ff, −40 °C, 1.95 V) | +0.123 ns | +0.118 ns |
+| Die area | 53,538 µm² | 53,619 µm² |
+| Power at 15.22 ns (tt) | 2.22 mW | 2.52 mW (+13.5%) |
+| Power at own max frequency (tt) | 2.22 mW | 2.80 mW |
+
+- **Setting:** clock target 6.57 ns, `SYNTH_STRATEGY="AREA 1"`, `PL_RESIZER_SETUP_SLACK_MARGIN=0`, `PL_RESIZER_SETUP_MAX_BUFFER_PCT=30`, `RUN_POST_GRT_RESIZER_TIMING=true`; placement and routing knobs at their defaults.
+- **Our reading:** a tighter target makes synthesis and timing repair work harder, and post-route repair fixes paths the earlier steps missed. The cost is more buffers and larger cells, hence more power.
+- **Larger-die runs** reached 11.23 ns (89 MHz) at 96,804 µm², over the 70,000 µm² limit.
+- **Power note:** `flows/sta_at.py` reports typical-corner power with its own settings. It differs from OpenLane's `power__total` (4.22 vs 4.94 mW for the default at 8 ns), so only its numbers are compared with each other.
+- **Not shown:** that this was learned (it was sampled before any update), or that it beats random search with the same budget.
+
 ## Open items
 
-- Base Qwen vs Qwen + LoRA, 6 sampled answers each, all routed (`python -m flows.compare`): running, results pending.
 - Random-search control with the same number of runs (`python -m flows.rl --random`).
 - Held-out design never seen in training.
 - Change the objective to maximum frequency, with routing time no worse than default (adds clock-target, synthesis-strategy and repair-margin knobs).

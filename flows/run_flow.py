@@ -22,8 +22,9 @@ IMAGE = "ghcr.io/efabless/openlane2:2.3.10"
 WSL_RUNS = "~/lora_router_runs"
 STOP_AT = "OpenROAD.STAPostPNR"  # skip GDS streaming, DRC decks and LVS: not part of routing
 
-# Knobs the policy may set, with allowed ranges (inclusive). Anything else is fixed.
-KNOBS = {
+# Knobs the policy may set. Numeric: (lo, hi, type), inclusive. bool. list: allowed values.
+# Anything not set keeps the OpenLane default (DEFAULTS, as resolved for mac16).
+ROUTE_KNOBS = {
     "FP_CORE_UTIL": (25, 65, int),
     "PL_TARGET_DENSITY_PCT": (35, 85, int),
     "GRT_ADJUSTMENT": (0.0, 0.7, float),
@@ -31,6 +32,27 @@ KNOBS = {
     "DRT_OPT_ITERS": (8, 64, int),
     "GPL_CELL_PADDING": (0, 4, int),
     "DPL_CELL_PADDING": (0, 4, int),
+}
+SYNTH_STRATEGIES = ["AREA 0", "AREA 1", "AREA 2", "AREA 3",
+                    "DELAY 0", "DELAY 1", "DELAY 2", "DELAY 3", "DELAY 4"]
+FREQ_KNOBS = {
+    "CLOCK_PERIOD": (4.0, 20.0, float),  # target in ns; synthesis and timing repair aim for it
+    "SYNTH_STRATEGY": SYNTH_STRATEGIES,
+    "SYNTH_ABC_BUFFERING": bool,
+    "SYNTH_SIZING": bool,
+    "PL_RESIZER_SETUP_SLACK_MARGIN": (0.0, 1.0, float),
+    "GRT_RESIZER_SETUP_SLACK_MARGIN": (0.0, 1.0, float),
+    "RUN_POST_GRT_RESIZER_TIMING": bool,
+    "PL_RESIZER_SETUP_MAX_BUFFER_PCT": (10, 100, int),
+}
+KNOBS = {**ROUTE_KNOBS, **FREQ_KNOBS}
+DEFAULTS = {
+    "FP_CORE_UTIL": 50, "PL_TARGET_DENSITY_PCT": "auto (62 for mac16)", "GRT_ADJUSTMENT": 0.3,
+    "GRT_OVERFLOW_ITERS": 50, "DRT_OPT_ITERS": 64, "GPL_CELL_PADDING": 0, "DPL_CELL_PADDING": 0,
+    "CLOCK_PERIOD": "the design's", "SYNTH_STRATEGY": "AREA 0", "SYNTH_ABC_BUFFERING": False,
+    "SYNTH_SIZING": False, "PL_RESIZER_SETUP_SLACK_MARGIN": 0.05,
+    "GRT_RESIZER_SETUP_SLACK_MARGIN": 0.025, "RUN_POST_GRT_RESIZER_TIMING": False,
+    "PL_RESIZER_SETUP_MAX_BUFFER_PCT": 50,
 }
 METRICS = {
     "wns_ss": "timing__setup__ws__corner:max_ss_100C_1v60",
@@ -46,10 +68,20 @@ METRICS = {
 
 
 def clamp(knobs):
+    """Coerce each value into its allowed range or set; drop values that cannot be read."""
     out = {}
     for k, v in knobs.items():
-        lo, hi, t = KNOBS[k]
-        out[k] = t(min(hi, max(lo, t(v))))
+        spec = KNOBS.get(k)
+        try:
+            if isinstance(spec, list):
+                out[k] = v if v in spec else spec[min(len(spec) - 1, max(0, int(float(v))))]
+            elif spec is bool:
+                out[k] = v if isinstance(v, bool) else str(v).strip().lower() in ("1", "true", "yes")
+            elif spec:
+                lo, hi, t = spec
+                out[k] = t(min(hi, max(lo, t(float(v)))))
+        except (TypeError, ValueError):
+            pass
     return out
 
 
@@ -85,8 +117,8 @@ def run(design, knobs=None, tag=None, keep=False, timeout=1800, note=""):
     p = _sh(cmd, timeout)
     wall = time.time() - t0
     out = p.stdout
-    rec = {"design": design, "tag": tag, "knobs": knobs, "wall_s": round(wall, 1), "note": note,
-           "ok": False}
+    rec = {"design": design, "tag": tag, "knobs": knobs, "clock": cfg["CLOCK_PERIOD"],
+           "wall_s": round(wall, 1), "note": note, "ok": False}
     try:
         steps = {m[1]: _secs(m[2]) for m in re.finditer(r"^RT (\S+) (\S+)$", out, re.M)}
         grt = sum(v for k, v in steps.items() if k.endswith("openroad-globalrouting"))

@@ -78,6 +78,47 @@ def apply_lora(model: nn.Module, rank: int = 8, alpha: float = 16.0,
     return trainable, total
 
 
+class HookLoRA(nn.Module):
+    """LoRA added to a Linear's output: y = W x + (alpha/r) B A x.
+
+    Unlike the parametrization above, the full [out, in] update is never built, which
+    matters for large layers (e.g. an LLM's MLP projections) on a small GPU.
+    """
+
+    def __init__(self, linear: nn.Linear, rank: int, alpha: float, dtype=torch.float32):
+        super().__init__()
+        self.lora_A = nn.Parameter(torch.empty(rank, linear.in_features, device=linear.weight.device, dtype=dtype))
+        self.lora_B = nn.Parameter(torch.zeros(linear.out_features, rank, device=linear.weight.device, dtype=dtype))
+        nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
+        self.scale = alpha / rank
+
+    def hook(self, module, inputs, output):
+        x = inputs[0].to(self.lora_A.dtype)
+        return output + ((x @ self.lora_A.t()) @ self.lora_B.t() * self.scale).to(output.dtype)
+
+
+def apply_lora_hooks(model: nn.Module, rank: int = 16, alpha: float = 32.0,
+                     targets: tuple = ("q_proj", "k_proj", "v_proj", "o_proj",
+                                       "gate_proj", "up_proj", "down_proj")):
+    """Freeze `model` and add HookLoRA to every nn.Linear whose name ends with a target.
+
+    Adapters live in `model.lora_adapters` (so they move and save with the model).
+    Returns (trainable_params, total_params).
+    """
+    for p in model.parameters():
+        p.requires_grad = False
+    adapters = nn.ModuleDict()
+    for name, m in list(model.named_modules()):
+        if isinstance(m, nn.Linear) and any(name.endswith(t) for t in targets):
+            a = HookLoRA(m, rank, alpha)
+            m.register_forward_hook(a.hook)
+            adapters[name.replace(".", "__")] = a
+    model.lora_adapters = adapters
+    trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    total = sum(p.numel() for p in model.parameters())
+    return trainable, total
+
+
 def lora_state_dict(model: nn.Module):
     """Only the trainable tensors: this is the adapter file to save per node."""
     return {n: p.detach().cpu() for n, p in model.named_parameters() if p.requires_grad}

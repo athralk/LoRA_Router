@@ -1,0 +1,31 @@
+{
+ "design": "alu32",
+ "cts_odb": "/home/atharvaa/lora_router_runs/alu32/runs/base/34-openroad-cts/alu32.odb",
+ "clock": 8.0,
+ "die": [
+  167.44,
+  178.16
+ ],
+ "markers": "1386 cells: 0 adder, 51 xor, 125 mux, 105 flop, 267 buf/inv, 838 logic | high fanout: clknet_3_7__leaf_clk (17), clknet_3_5__leaf_clk (17), clknet_3_0__leaf_clk (17)",
+ "P_start": 12.9925,
+ "area_start": 12525.0,
+ "target": 11.36,
+ "default": {
+  "P": 11.5484,
+  "hold": 0.1811,
+  "area": 13086.0,
+  "tool_s": 17.0,
+  "actions": 2,
+  "success": false,
+  "power": 1.72
+ },
+ "max_effort": {
+  "P": 11.3567,
+  "hold": 0.1798,
+  "area": 13215.0,
+  "tool_s": 32.1,
+  "actions": 3,
+  "success": true,
+  "power": 1.73
+ }
+}
